@@ -1,13 +1,21 @@
 import * as crypto from 'crypto';
-import { Block } from './Block';
+import { ValidationService } from './ValidationService';
+import { Block } from '../model/Block';
+import { Chain } from '../model/Chain';
 
-export class Chain {
+/**
+ * Here we manage the chain.
+ * Important: neve add anything to the chain that has not been verified and mined.
+ */
+export class ChainService {
 
-    private static instance: Chain;
-    chain: Block[] = [];
+    private static instance: ChainService;
 
-    private constructor() {
-        this.chain = [new Block("", new Transaction(1, "firstPayer", "firstReceiver"))]
+    static getInstance(): ChainService {
+        if (!ChainService.instance) {
+            ChainService.instance = new ChainService();
+        }
+        return ChainService.instance;
     }
 
     /**
@@ -18,13 +26,13 @@ export class Chain {
      * @param signature the signature of the transaction.
      */
     addBlock(transaction: Transaction, senderPublicKey: string, signature: any) {
-         // here we validate if the transaction data is correct using the public key and signature of the haash - any change to the transaction would cause the hash to change, giving a different signature.
-        const isTransactionValid = crypto.createVerify('SHA256').update(transaction.toString()).verify(senderPublicKey, signature);
+        // here we validate if the transaction data is correct using the public key and signature of the haash - any change to the transaction would cause the hash to change, giving a different signature.
+        const isTransactionValid = ValidationService.getInstance().validateTransaction(transaction, senderPublicKey, signature);
         
         if (isTransactionValid) {
-            const newBlock = new Block(this.lastBlock.hash, transaction);
+            const newBlock = new Block(Chain.getInstance().lastBlock.hash, transaction);
             this.mineBlock(newBlock.nonce);
-            this.chain.push(newBlock);
+            Chain.getInstance().chain.push(newBlock);
         }
 
     }
@@ -34,9 +42,9 @@ export class Chain {
      * This method deal with the double spend issue. If One subject tries to make the same transaction twice simultaneously, it will ensure they are different using the nonce
      * We try to find a number that when added to the nonce will result 
      * @param nonce 
-     * @returns 
+     * @returns return the value that added to the nounce
      */
-    mineBlock(nonce: number) {
+    mineBlock(nonce: number): number {
         let solution = 1;
 
         while(true) {
@@ -48,16 +56,5 @@ export class Chain {
             }
             solution++;
         }
-    }
-
-    static getInstance(): Chain {
-        if (!Chain.instance) {
-            Chain.instance = new Chain();
-        }
-        return Chain.instance;
-    }
-
-    get lastBlock() {
-        return this.chain[this.chain.length-1];
     }
 }
