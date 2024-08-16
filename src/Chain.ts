@@ -12,6 +12,7 @@ export class Chain {
 
     /**
      * Used to add a block to the chain. Important: this should never be called without a proper validation of the block being added.
+     * When receiving a new block we always verify if the chain is matching before adding it to our local chain.
      * @param transaction the transaction operation itself.
      * @param publicKey the sender public key.
      * @param signature the signature of the transaction.
@@ -22,9 +23,31 @@ export class Chain {
         
         if (isTransactionValid) {
             const newBlock = new Block(this.lastBlock.hash, transaction);
+            this.mineBlock(newBlock.nonce);
             this.chain.push(newBlock);
         }
 
+    }
+
+    /**
+     * Proof of work method.
+     * This method deal with the double spend issue. If One subject tries to make the same transaction twice simultaneously, it will ensure they are different using the nonce
+     * We try to find a number that when added to the nonce will result 
+     * @param nonce 
+     * @returns 
+     */
+    mineBlock(nonce: number) {
+        let solution = 1;
+
+        while(true) {
+            const attempt = crypto.createHash('MD5').update((nonce + solution).toString()).end().digest('hex');
+            
+            if (attempt.substring(0,4) === '0000') {
+                console.log("Solved using: " + solution);
+                return solution;
+            }
+            solution++;
+        }
     }
 
     static getInstance(): Chain {
