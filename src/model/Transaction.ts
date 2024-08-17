@@ -13,5 +13,4 @@ class Transaction {
     toString() {
         return JSON.stringify(this);
     }
-
 }

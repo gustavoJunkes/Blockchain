@@ -5,7 +5,7 @@ import * as crypto from 'crypto'
  * 
  */
 export class Block {
-    nonce = Math.random();
+    public nonce = Math.random();
 
     constructor(
         previousBlock: string, // should we store only the header (in hash) of the previous block?
