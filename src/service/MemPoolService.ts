@@ -1,4 +1,5 @@
 import { MemPool } from "../model/MemPool";
+import { Transaction } from '../model/Transaction';
 
 /**
  * Here we manage the Memory Pool.

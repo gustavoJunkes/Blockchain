@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import { Block } from './Block';
+import { Transaction } from './Transaction';
 
 export class Chain {
 

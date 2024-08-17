@@ -2,6 +2,7 @@ import * as crypto from 'crypto';
 import { ValidationService } from './ValidationService';
 import { Block } from '../model/Block';
 import { Chain } from '../model/Chain';
+import { Transaction } from '../model/Transaction';
 
 /**
  * Here we manage the chain.

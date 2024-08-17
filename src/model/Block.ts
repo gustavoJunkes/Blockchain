@@ -1,4 +1,5 @@
 import * as crypto from 'crypto'
+import { Transaction } from './Transaction';
 
 /**
  * This class represents a transaction in the chain.

@@ -1,3 +1,5 @@
+import { Transaction } from './Transaction';
+
 /**
  * Data structure responsable for storing the transactions that were verified but are not yet mined
  */

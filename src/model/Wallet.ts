@@ -3,6 +3,7 @@ import { format } from 'path';
 import { Chain } from './Chain';
 
 export class Wallet {
+    // TODO: save keys in a file so user dont loose them
     public privateKey: string;
     public publicKey: string;
     

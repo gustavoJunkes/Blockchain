@@ -2,7 +2,7 @@
  * This class represents a transaction in the chain.
  * It should store ...
  */
-class Transaction {
+export class Transaction {
     
     constructor(
         private amount: number,

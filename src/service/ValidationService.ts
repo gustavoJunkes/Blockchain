@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import { MemPoolService } from './MemPoolService';
+import { Transaction } from '../model/Transaction';
 
 /**
  * Here we validate transactions
