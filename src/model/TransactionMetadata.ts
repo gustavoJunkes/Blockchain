@@ -2,9 +2,9 @@ import { send } from "process";
 import { Transaction } from "./Transaction";
 
 export class TransactionMetadata {
-    private transaction: Transaction;
-    private signature: any;
-    private senderPublicKey: string;
+    public transaction: Transaction;
+    public signature: Buffer;
+    public senderPublicKey: string;
 
     constructor(
         transaction: Transaction,

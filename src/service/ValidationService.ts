@@ -24,12 +24,12 @@ export class ValidationService {
      * @param senderPublicKey 
      * @param signature 
      */
-    public validateTransaction(transaction: Transaction, senderPublicKey: string, signature: any): boolean {
+    public validateTransaction(transaction: Transaction, senderPublicKey: string, signature: Buffer): boolean {
         const validSignature = crypto.createVerify('SHA256').update(transaction.toString()).verify(senderPublicKey, signature);
         // TODO: Validate balance of the sending wallet
 
         if (validSignature) {
-            MemPoolService.getInstance().publishToMemPool
+            MemPoolService.getInstance().publishToMemPool(transaction)
         }
 
         return validSignature // && balanceValid;

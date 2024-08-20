@@ -37,4 +37,11 @@ export class MockNetworkFileSevice {
         console.log(newFileContent)
         files.writeFileSync(this.sourceFile, newFileContent);
     }
+
+    getTransactionsToValidate() {
+        const fileContent = files.readFileSync(this.sourceFile, 'utf8');
+        const jsonContent = JSON.parse(fileContent);
+    
+        return jsonContent.transactionsToValidate;
+    }
 }
