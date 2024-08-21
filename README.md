@@ -1,2 +1,7 @@
-# Blockchain
-A simple blockchain system created to explore and practice the use of cryptography within blockchain protocols.
+# Blockchain Implementaion in Node.js
+
+## Table of contents
+...
+
+## Project Overview
+
