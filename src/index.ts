@@ -9,21 +9,21 @@ console.log("Begin...")
 /**
  * Create transaction
  */
-/*
+
 let gustavo = new Wallet();
 let maria = new Wallet();
 
 
-TransactionService.getInstance().createTransaction(10, gustavo.privateKey, gustavo.publicKey, maria.publicKey);
-*/
+let newTransaction = TransactionService.getInstance().createTransaction(10, gustavo.privateKey, gustavo.publicKey, maria.publicKey);
+
 
 /**
  * Simulate node that validate the transaction and broadcast it to the mempool - both local and in the network
  */
 
-let transactions: TransactionMetadata[] = MockNetworkFileSevice.getInstance().getTransactionsToValidate();
+let transactions: TransactionMetadata[] = [newTransaction]; //MockNetworkFileSevice.getInstance().getTransactionsToValidate();
 
-for (let i = 0; i <= transactions.length; i++) {
+for (let i = 0; i < transactions.length; i++) {
     console.log("-----------------------------------------")
     let transaction: TransactionMetadata = transactions[i];
 

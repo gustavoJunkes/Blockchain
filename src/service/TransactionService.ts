@@ -28,7 +28,7 @@ export class TransactionService {
      * @param amount the amount being sent to another wallet
      * @param receiverPublicKey the public key of the receiver wallet
      */
-    public createTransaction(amount: number, senderPrivateKey: string, senderPublicKey: string, receiverPublicKey: string) {
+    public createTransaction(amount: number, senderPrivateKey: string, senderPublicKey: string, receiverPublicKey: string): TransactionMetadata {
         
         const transaction = new Transaction(amount, senderPrivateKey, receiverPublicKey);
         const transactionHash = transaction.toString(); 
@@ -38,8 +38,11 @@ export class TransactionService {
         const signer = crypto.createSign('SHA256').update(transactionHash).end();
         const signature = signer.sign(senderPrivateKey);
 
+        let newTransactionMetadata = new TransactionMetadata(transaction, signature, senderPublicKey);
+
         // TODO: broadcast to network the new transaction to be validated by every node
-        MockNetworkFileSevice.getInstance().addTransactionToValidate(new TransactionMetadata(transaction, signature, senderPublicKey));
+        MockNetworkFileSevice.getInstance().addTransactionToValidate(newTransactionMetadata);
         // Chain.getInstance().addBlock(transaction, senderPublicKey, signature); // here, before adding the block to the chain we need to call other nodes to verify it. Then each node would add this block to their own chain
+        return newTransactionMetadata;
     }
 }
