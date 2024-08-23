@@ -1,37 +1,56 @@
-import { TransactionMetadata } from "./model/TransactionMetadata";
-import { Wallet } from "./model/Wallet";
-import { MockNetworkFileSevice } from "./service/MockNetworkFileService";
-import { TransactionService } from "./service/TransactionService";
-import { ValidationService } from "./service/ValidationService";
-
-console.log("Begin...")
-
-/**
- * Create transaction
- */
-
-let gustavo = new Wallet();
-let maria = new Wallet();
+// import { TransactionMetadata } from "./model/TransactionMetadata";
+// import { Wallet } from "./model/Wallet";
+// import { MockNetworkFileSevice } from "./service/MockNetworkFileService";
+// import { TransactionService } from "./service/TransactionService";
+// import { ValidationService } from "./service/ValidationService";
 
 
-let newTransaction = TransactionService.getInstance().createTransaction(10, gustavo.privateKey, gustavo.publicKey, maria.publicKey);
+// console.log("Begin...")
+
+// /**
+//  * Create transaction
+//  */
+
+// let gustavo = new Wallet();
+// let maria = new Wallet();
 
 
-/**
- * Simulate node that validate the transaction and broadcast it to the mempool - both local and in the network
- */
+// let newTransaction = TransactionService.getInstance().createTransaction(10, gustavo.privateKey, gustavo.publicKey, maria.publicKey);
 
-let transactions: TransactionMetadata[] = [newTransaction]; //MockNetworkFileSevice.getInstance().getTransactionsToValidate();
 
-for (let i = 0; i < transactions.length; i++) {
-    console.log("-----------------------------------------")
-    let transaction: TransactionMetadata = transactions[i];
+// /**
+//  * Simulate node that validate the transaction and broadcast it to the mempool - both local and in the network
+//  */
 
-    console.log(`Validating transaction: ${JSON.stringify(transaction)}`);
-    console.log(transaction.signature)
-    let realBuffer = Buffer.from(transaction.signature);
-    let valid = ValidationService.getInstance().validateTransaction(transaction.transaction, transaction.senderPublicKey, realBuffer);
+// let transactions: TransactionMetadata[] = [newTransaction]; //MockNetworkFileSevice.getInstance().getTransactionsToValidate();
 
-    console.log(`Signature valid: ${valid}`);
+// for (let i = 0; i < transactions.length; i++) {
+//     console.log("-----------------------------------------")
+//     let transaction: TransactionMetadata = transactions[i];
+
+//     console.log(`Validating transaction: ${JSON.stringify(transaction)}`);
+//     console.log(transaction.signature)
+//     let realBuffer = Buffer.from(transaction.signature);
+//     let valid = ValidationService.getInstance().validateTransaction(transaction.transaction, transaction.senderPublicKey, realBuffer);
+
+//     console.log(`Signature valid: ${valid}`);
+// }
+
+// ----------------------------------------------------------------------------------------------------
+
+import { NetworkService } from "./service/network/NetworkService.ts";
+
+
+async function main() {
+    const networkService = new NetworkService();
+    await networkService.setup();
+
+    // Add other services initialization here if needed
+
+    console.log("Application is running");
 }
 
+main().catch(err => {
+    console.error("Error starting application:", err);
+    process.exit(1); // Exit the process if there's an error
+});
