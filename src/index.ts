@@ -38,12 +38,15 @@
 
 // ----------------------------------------------------------------------------------------------------
 
-import { NetworkService } from "./service/network/NetworkService.ts";
+import { networkInterfaces } from "os";
+import { NetworkService } from "./service/network/NetworkService.js";
 
+export class Index {}
 
 async function main() {
-    const networkService = new NetworkService();
-    await networkService.setup();
+    await NetworkService.getInstance().setupNode();
+    
+    await NetworkService.getInstance().dialNode('/ip4/127.0.0.1/tcp/9000/p2p/12D3KooWDLa3T9tZjMy1xjZavBmdixpa3Z67qCiWQoU4BGu8UEYS');
 
     // Add other services initialization here if needed
 
