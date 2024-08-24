@@ -46,7 +46,7 @@ export class Index {}
 async function main() {
     await NetworkService.getInstance().setupNode();
     
-    await NetworkService.getInstance().dialNode('/ip4/127.0.0.1/tcp/9000/p2p/12D3KooWDLa3T9tZjMy1xjZavBmdixpa3Z67qCiWQoU4BGu8UEYS');
+    await NetworkService.getInstance().dialNode('/ip4/127.0.0.1/tcp/8000/p2p/12D3KooWMULpEvuKpH5CHAHkh7enWHqsc4wm9hocKSoAGg9Pn8mw', 'hello woooorld!');
 
     // Add other services initialization here if needed
 

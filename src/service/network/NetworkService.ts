@@ -1,10 +1,11 @@
-import { createLibp2p } from "libp2p";
+import { Libp2p, createLibp2p } from "libp2p";
 import { tcp } from "@libp2p/tcp";
 import { noise } from '@chainsafe/libp2p-noise'
 import { yamux } from '@chainsafe/libp2p-yamux'
 import { bootstrap } from '@libp2p/bootstrap'
 import { multiaddr } from '@multiformats/multiaddr'
-import { Stream } from '@libp2p/interface-connection'; 
+import { pipe } from 'it-pipe'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 export class NetworkService {
     
@@ -17,20 +18,20 @@ export class NetworkService {
         return NetworkService.instance;
     }
 
-    // Known peers addresses
+    // Known peers addresses - just dummy value, no node is running in the network by default
     bootstrapMultiaddrs = [
         '/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb',
         '/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN'
     ]
 
-    private node: any;
+    private node: Libp2p | undefined
 
     async setupNode() {
         // create a new node
         this.node = await createLibp2p({
             start: false,
             addresses: {
-                listen: ['/ip4/127.0.0.1/tcp/8000']
+                listen: ['/ip4/127.0.0.1/tcp/9000']
             },
             transports: [tcp()],
             connectionEncryption: [noise()],
@@ -42,42 +43,57 @@ export class NetworkService {
               ]
         })
 
-        // handle connections
-        this.node.handle('/tcp', async ({ stream }: { stream: Stream }) => {
-            console.log('Received a connection!');
-            console.log(stream)
-        });
+        this.handleConnections();
         
         await this.node.start();
         console.log('libp2p has started')
-
-
-        // // i still dont have any node to cnnect ...
-        // const ma = multiaddr('/ip4/127.0.0.1/tcp/8000/p2p/12D3KooWHCMjDdbUCPuUjTSt3dnypuKLrr2wjprDFy2kw9fD3PDh') // here the addrs of the other node running... 
-
-        // // dial a TCP connection, timing out after 10 seconds - wont work if there is no node listening in this address.
-        // const connection = await this.node.dial(ma, {
-        //     signal: AbortSignal.timeout(10_000)
-        // })  
 
         const listenAddrs = this.node.getMultiaddrs()
         console.log('libp2p is listening on the following addresses: ', listenAddrs)
     }
 
     /**
-     * Used to connect to node in given address
-     * 
+     * Here we handle the connections to this node, using the specified protocol.
      */
-    async dialNode(peerAddress: string) {
+    private async handleConnections() {
+
+        this.node?.handle('/node-connect', async ( {stream} ) => {
+            pipe(
+                stream,
+                async function (source) {
+                  for await (const msg of source) {
+                    console.log('Msg: ' + uint8ArrayToString(msg.subarray()))
+                  }
+                }
+              )
+        });
+    }
+
+    /**
+     * Used to connect to node in given address and send data
+     */
+    async dialNode(peerAddress: string, data: string) {
         const ma = multiaddr(peerAddress);
 
         try {
-            const connection = await this.node.dial(ma, {
+            // Dial to the remote peer with the specified protocol
+            const stream = await this.node?.dialProtocol(ma, '/node-connect', {
                 signal: AbortSignal.timeout(10_000)
             });
-            console.log('Connected to', peerAddress);
+
+            if (stream) {
+                console.log('Connected to', peerAddress);
+   
+            // Convert the data to Uint8Array and wrap it in an array
+            const encoder = new TextEncoder();
+            const encodedData = encoder.encode(data);
+            await stream.sink([encodedData]);
+            console.log('Data sent:', data);
+            } else {
+                console.error('Failed to get stream');
+            }
         } catch (error) {
-            console.error('Failed to connect:', error);
+            console.error('Failed to connect or send data:', error);
         }
     }
 
@@ -88,3 +104,6 @@ export class NetworkService {
         }
     }
 }
+
+
+
