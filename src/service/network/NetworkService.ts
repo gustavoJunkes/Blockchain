@@ -6,9 +6,13 @@ import { bootstrap } from '@libp2p/bootstrap'
 import { multiaddr } from '@multiformats/multiaddr'
 import { pipe } from 'it-pipe'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { TransactionMetadata } from "../../model/TransactionMetadata";
 
-export class NetworkService {
+export class NetworkService {   
     
+    private peerAdress = '/ip4/127.0.0.1/tcp/8000/p2p/12D3KooWECR7nSjhTxi7kv8dZ37gEVqgxQn6WPmbzwt3bSsNnTi6';
+    private port = '9000'
+
     private static instance: NetworkService;
 
     static getInstance(): NetworkService {
@@ -31,7 +35,7 @@ export class NetworkService {
         this.node = await createLibp2p({
             start: false,
             addresses: {
-                listen: ['/ip4/127.0.0.1/tcp/9000']
+                listen: [`/ip4/127.0.0.1/tcp/${this.port}`]
             },
             transports: [tcp()],
             connectionEncryption: [noise()],
@@ -56,14 +60,15 @@ export class NetworkService {
      * Here we handle the connections to this node, using the specified protocol.
      */
     private async handleConnections() {
-
         this.node?.handle('/node-connect', async ( {stream} ) => {
             pipe(
                 stream,
-                async function (source) {
-                  for await (const msg of source) {
-                    console.log('Msg: ' + uint8ArrayToString(msg.subarray()))
-                  }
+                async function (source: any) {
+                    console.log(source)
+                    for await (const msg of source) {
+                        console.log('msg: ' + msg);
+                        console.log(msg[0])
+                    }
                 }
               )
         });
@@ -72,7 +77,7 @@ export class NetworkService {
     /**
      * Used to connect to node in given address and send data
      */
-    async dialNode(peerAddress: string, data: string) {
+    private async dialNode(peerAddress: string, data: any) {
         const ma = multiaddr(peerAddress);
 
         try {
@@ -102,6 +107,10 @@ export class NetworkService {
             await this.node.stop();
             console.log('libp2p has stopped');
         }
+    }
+
+    public publicTransactionToValidation(transactionMetadata: TransactionMetadata) {
+        this.dialNode(this.peerAdress, transactionMetadata);
     }
 }
 

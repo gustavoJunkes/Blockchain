@@ -40,17 +40,24 @@
 
 import { networkInterfaces } from "os";
 import { NetworkService } from "./service/network/NetworkService.js";
+import { Wallet } from "./model/Wallet.js";
+import { MockNetworkFileSevice } from "./service/MockNetworkFileService.js";
+import { TransactionService } from "./service/TransactionService.js";
 
 export class Index {}
 
 async function main() {
+
     await NetworkService.getInstance().setupNode();
-    
-    await NetworkService.getInstance().dialNode('/ip4/127.0.0.1/tcp/8000/p2p/12D3KooWMULpEvuKpH5CHAHkh7enWHqsc4wm9hocKSoAGg9Pn8mw', 'hello woooorld!');
 
-    // Add other services initialization here if needed
+    const localWallet1 = MockNetworkFileSevice.getInstance().getWallets().filter((value) => value.id === 1)[0];
+    console.log(localWallet1);
 
-    console.log("Application is running");
+    const localWallet2 = MockNetworkFileSevice.getInstance().getWallets().filter((value) => value.id === 2)[0];
+    console.log(localWallet2);
+
+    await TransactionService.getInstance().createTransaction(15, localWallet1.privateKey, localWallet1.publicKey, localWallet2.publicKey);
+
 }
 
 main().catch(err => {

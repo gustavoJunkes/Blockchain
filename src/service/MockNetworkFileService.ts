@@ -1,6 +1,7 @@
 import * as files from 'fs';
 import { TransactionMetadata } from '../model/TransactionMetadata';
 import { json } from 'stream/consumers';
+import { Wallet } from '../model/Wallet';
 
 export class MockNetworkFileSevice {
     private sourceFile = 'src/data.json';
@@ -43,5 +44,23 @@ export class MockNetworkFileSevice {
         const jsonContent = JSON.parse(fileContent);
     
         return jsonContent.transactionsToValidate;
+    }
+
+    saveWallet(wallet: Wallet) {
+        const jsonContent = JSON.parse(files.readFileSync(this.sourceFile, 'utf8'));
+        jsonContent.wallets.push(wallet);
+
+        console.log(jsonContent)
+        const newFileContent = JSON.stringify(jsonContent);
+
+        console.log(newFileContent)
+        files.writeFileSync(this.sourceFile, newFileContent);
+    }
+
+    getWallets(): Wallet[] {
+        const fileContent = files.readFileSync(this.sourceFile, 'utf8');
+        const jsonContent = JSON.parse(fileContent);
+    
+        return jsonContent.wallets;
     }
 }
