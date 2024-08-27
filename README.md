@@ -17,6 +17,10 @@ P2P comunication: the protocol used to one node comunicate with others and disse
 
 ## Tasks
 - Node registry mechanism: a node, as soon as it is up, should find another already node running in the network and connect to it.
+- Decode data received via network.
+- Create a service that manage the network system:
+    - Connects and broadcast to multiple nodes at same time.
+    - Handle incoming requests accord with the protocol (one for valid, other for mempool, etc)
 
 ## Getting Started
 
