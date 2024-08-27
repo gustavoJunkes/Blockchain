@@ -15,6 +15,9 @@
 
 P2P comunication: the protocol used to one node comunicate with others and disseminate informations across the network.
 
+## Tasks
+- Node registry mechanism: a node, as soon as it is up, should find another already node running in the network and connect to it.
+
 ## Getting Started
 
 ## Contribute
