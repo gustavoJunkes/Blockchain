@@ -1,5 +1,6 @@
-import { MemPool } from "../model/MemPool";
+import { MemPool } from "../model/MemPool.js";
 import { Transaction } from '../model/Transaction';
+import { TransactionMetadata } from "../model/TransactionMetadata.js";
 
 /**
  * Here we manage the Memory Pool.
@@ -18,19 +19,20 @@ export class MemPoolService {
 
     /**
      * Publish the given transaction to the network memPool and add it to the local memPool.
+     * Each node is responsible for validating the transactions received and add to its local mempool.
      * @param transaction 
      */
-    public publishToMemPool(transaction: Transaction) {
+    public publishToMemPool(transaction: TransactionMetadata) {
         this.addToMemPool(transaction); 
 
-        // TODO: publish this transaction to the network
+        // TODO: publish this transaction to the network?
     }
 
     /**
      * Add the given transaction to the local memPool.
      * @param transaction 
      */
-    public addToMemPool(transaction: Transaction) {
+    public addToMemPool(transaction: TransactionMetadata) {
         MemPool.getInstance().transactions.push(transaction);
     }
 }

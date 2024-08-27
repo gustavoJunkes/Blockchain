@@ -1,6 +1,8 @@
 import * as crypto from 'crypto';
-import { MemPoolService } from './MemPoolService';
-import { Transaction } from '../model/Transaction';
+import { MemPoolService } from './MemPoolService.js';
+import { Transaction } from '../model/Transaction.js';
+import { TransactionMetadata } from '../model/TransactionMetadata.js';
+import { send } from 'process';
 
 /**
  * Here we validate transactions
@@ -25,13 +27,20 @@ export class ValidationService {
      * @param signature 
      */
     public validateTransaction(transaction: Transaction, senderPublicKey: string, signature: Buffer): boolean {
+        console.log('--------- the signature ------------')
+        console.log(signature)
+
         const validSignature = crypto.createVerify('SHA256').update(transaction.toString()).verify(senderPublicKey, signature);
         // TODO: Validate balance of the sending wallet
 
+        var newTransactionMetadata = new TransactionMetadata(transaction, signature, senderPublicKey);
+
+        console.log(validSignature)
         if (validSignature) {
-            MemPoolService.getInstance().publishToMemPool(transaction)
+            MemPoolService.getInstance().publishToMemPool(newTransactionMetadata);
         }
 
+        
         return validSignature // && balanceValid;
     }
 

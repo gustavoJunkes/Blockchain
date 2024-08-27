@@ -4,13 +4,15 @@ import { noise } from '@chainsafe/libp2p-noise'
 import { yamux } from '@chainsafe/libp2p-yamux'
 import { bootstrap } from '@libp2p/bootstrap'
 import { multiaddr } from '@multiformats/multiaddr'
-import { pipe } from 'it-pipe'
+import { TransactionMetadata } from "../../model/TransactionMetadata.js";
+import { pipe } from "it-pipe";
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
-import { TransactionMetadata } from "../../model/TransactionMetadata";
+import { ValidationService } from "../ValidationService.js";
+
 
 export class NetworkService {   
     
-    private peerAdress = '/ip4/127.0.0.1/tcp/8000/p2p/12D3KooWECR7nSjhTxi7kv8dZ37gEVqgxQn6WPmbzwt3bSsNnTi6';
+    private peerAdress = '/ip4/127.0.0.1/tcp/8000/p2p/12D3KooWLEXR9k3XpGPdTqzGUqKafnTDLYKwuDKXJkimLV62BAif';
     private port = '9000'
 
     private static instance: NetworkService;
@@ -60,15 +62,41 @@ export class NetworkService {
      * Here we handle the connections to this node, using the specified protocol.
      */
     private async handleConnections() {
-        this.node?.handle('/node-connect', async ( {stream} ) => {
+        this.node?.handle('/node-connect', async ( {stream}: any ) => {
             pipe(
                 stream,
-                async function (source: any) {
-                    console.log(source)
-                    for await (const msg of source) {
-                        console.log('msg: ' + msg);
-                        console.log(msg[0])
-                    }
+                async function (source) {
+                  for await (const msg of source) {
+                    var value = uint8ArrayToString(msg.subarray())
+                    console.log('Msg: ' + value)
+                    JSON.parse(value);
+                  }
+                }
+              )
+        });
+
+        /**
+         * handle transactions received to validate
+         */
+        this.node?.handle('/validate-transaction', async ( {stream}: any ) => {
+            pipe(
+                stream,
+                async function (source) {
+                  for await (const msg of source) {
+                    var value = uint8ArrayToString(msg.subarray())
+                    // console.log('Msg: ' + value)
+                    const value2 = TransactionMetadata.deserialize(value);
+                    console.log('------------------- The whole value2 variable --')
+                    console.log(value2)
+                    console.log('------------------- Signature ------------------')
+                    console.log(value2.signature);
+                    console.log('------------------- Transaction ----------------')
+                    console.log(value2.transaction)
+                    console.log('----')
+                    Buffer.from(value2.signature)
+                    
+                    ValidationService.getInstance().validateTransaction(value2.transaction, value2.senderPublicKey, value2.signature);
+                  }
                 }
               )
         });
@@ -77,12 +105,12 @@ export class NetworkService {
     /**
      * Used to connect to node in given address and send data
      */
-    private async dialNode(peerAddress: string, data: any) {
+    private async dialNode(peerAddress: string, protocol: string, data: any) {
         const ma = multiaddr(peerAddress);
 
         try {
             // Dial to the remote peer with the specified protocol
-            const stream = await this.node?.dialProtocol(ma, '/node-connect', {
+            const stream = await this.node?.dialProtocol(ma, protocol, {
                 signal: AbortSignal.timeout(10_000)
             });
 
@@ -110,7 +138,7 @@ export class NetworkService {
     }
 
     public publicTransactionToValidation(transactionMetadata: TransactionMetadata) {
-        this.dialNode(this.peerAdress, transactionMetadata);
+        this.dialNode(this.peerAdress, '/validate-transaction', transactionMetadata.serialize());
     }
 }
 
