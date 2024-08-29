@@ -12,8 +12,8 @@ import { ValidationService } from "../ValidationService.js";
 
 export class NetworkService {   
     
-    private peerAdress = '/ip4/127.0.0.1/tcp/8000/p2p/12D3KooWLEXR9k3XpGPdTqzGUqKafnTDLYKwuDKXJkimLV62BAif';
-    private port = '9000'
+    private peerAdress = '/ip4/127.0.0.1/tcp/9000/p2p/12D3KooWAQzFCSdWAP3sqNepvZ2wddmzHmQ9id5Us7ag4zGBys4h';
+    private port = '8000'
 
     private static instance: NetworkService;
 
@@ -84,17 +84,7 @@ export class NetworkService {
                 async function (source) {
                   for await (const msg of source) {
                     var value = uint8ArrayToString(msg.subarray())
-                    // console.log('Msg: ' + value)
                     const value2 = TransactionMetadata.deserialize(value);
-                    console.log('------------------- The whole value2 variable --')
-                    console.log(value2)
-                    console.log('------------------- Signature ------------------')
-                    console.log(value2.signature);
-                    console.log('------------------- Transaction ----------------')
-                    console.log(value2.transaction)
-                    console.log('----')
-                    Buffer.from(value2.signature)
-                    
                     ValidationService.getInstance().validateTransaction(value2.transaction, value2.senderPublicKey, value2.signature);
                   }
                 }
@@ -138,6 +128,10 @@ export class NetworkService {
     }
 
     public publicTransactionToValidation(transactionMetadata: TransactionMetadata) {
+        console.log('------- transactionMetadata.serialize() -------')
+        console.log(transactionMetadata.serialize())
+        console.log('---')
+        console.log(transactionMetadata.serialize())
         this.dialNode(this.peerAdress, '/validate-transaction', transactionMetadata.serialize());
     }
 }

@@ -1,8 +1,5 @@
-import * as crypto from 'crypto';
-import { ValidationService } from './ValidationService';
-import { Block } from '../model/Block';
-import { Chain } from '../model/Chain';
-import { Transaction } from '../model/Transaction';
+import { Block } from '../model/Block.js';
+import { Chain } from '../model/Chain.js';
 
 /**
  * Here we manage the chain.
@@ -25,17 +22,14 @@ export class ChainService {
      * @param transaction the transaction operation itself.
      * @param publicKey the sender public key.
      * @param signature the signature of the transaction.
+     * 
+     * @returns true if the block was added to the chain, false otherwise.
      */
-    addBlock(transaction: Transaction, senderPublicKey: string, signature: any) {
-        // here we validate if the transaction data is correct using the public key and signature of the haash - any change to the transaction would cause the hash to change, giving a different signature.
-        // const isTransactionValid = ValidationService.getInstance().validateTransaction(transaction, senderPublicKey, signature);
-        
-        // if (isTransactionValid) {
-        //     const newBlock = new Block(Chain.getInstance().lastBlock.hash, transaction);
-        //     this.mineBlock(newBlock.nonce);
-        //     Chain.getInstance().chain.push(newBlock);
-        // }
-
+    addBlock(block: Block): boolean {
+        // here we can add any final validation logic we need 
+        // TODO: Validate the state of the chain.
+        Chain.getInstance().chain.push(block);
+        return true; // for now, always returns success
     }
 
 }

@@ -33,9 +33,6 @@ export class TransactionService {
         
         const transaction = new Transaction(amount, senderPrivateKey, receiverPublicKey);
         const transactionHash = transaction.toString(); 
-
-        console.log("transaction hash: " + transactionHash)
-        console.log("senderPrivateKey: " + senderPrivateKey)
         const signer = crypto.createSign('SHA256').update(transactionHash).end();
         const signature = signer.sign(senderPrivateKey);
 

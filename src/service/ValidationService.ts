@@ -27,16 +27,16 @@ export class ValidationService {
      * @param signature 
      */
     public validateTransaction(transaction: Transaction, senderPublicKey: string, signature: Buffer): boolean {
-        console.log('--------- the signature ------------')
-        console.log(signature)
+        console.log('--------- the transaction hash ------------')
+        console.log(transaction.toString())
 
         const validSignature = crypto.createVerify('SHA256').update(transaction.toString()).verify(senderPublicKey, signature);
         // TODO: Validate balance of the sending wallet
 
-        var newTransactionMetadata = new TransactionMetadata(transaction, signature, senderPublicKey);
-
         console.log(validSignature)
+
         if (validSignature) {
+            var newTransactionMetadata = new TransactionMetadata(transaction, signature, senderPublicKey);
             MemPoolService.getInstance().publishToMemPool(newTransactionMetadata);
         }
 

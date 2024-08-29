@@ -1,20 +1,30 @@
 import * as crypto from 'crypto';
-import { Block } from '../model/Block';
-import { Chain } from '../model/Chain';
-import { Transaction } from '../model/Transaction';
+import { Block } from '../model/Block.js';
+import { Chain } from '../model/Chain.js';
+import { TransactionMetadata } from '../model/TransactionMetadata.js';
 
 /**
  * Here we manage the mining related actions.
  */
 export class MiningService {
 
+    private static instance: MiningService;
+
+    static getInstance(): MiningService {
+        if (!MiningService.instance) {
+            MiningService.instance = new MiningService();
+        }
+        return MiningService.instance;
+    }
+
     /**
      * Mine the transaction using the proof of work algorithm.
      * @param transaction 
      */
-    mine(transaction: Transaction) {
-        let block = new Block(Chain.getInstance().lastBlock.hash, transaction);
+    mine(transaction: TransactionMetadata): Block {
+        let block = new Block(Chain.getInstance().lastBlock.hash, transaction.transaction);
         block.nonce = this.proofOfWork(block.nonce);
+        return block;
     }
 
     

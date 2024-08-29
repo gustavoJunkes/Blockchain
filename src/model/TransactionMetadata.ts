@@ -1,5 +1,5 @@
 import { send } from "process";
-import { Transaction } from "./Transaction";
+import { Transaction } from "./Transaction.js";
 
 /**
  * Class used to manage the transactions as they are transmitted.
@@ -31,8 +31,9 @@ export class TransactionMetadata {
     // Method to deserialize a JSON string back into a TransactionMetadata object
     static deserialize(data: string): TransactionMetadata {
         const parsed = JSON.parse(data);
+        const transactionParsed = new Transaction(parsed.transaction.amount, parsed.transaction.payer, parsed.transaction.receiver)
         return new TransactionMetadata(
-            parsed.transaction,
+            transactionParsed,
             Buffer.from(parsed.signature, 'base64'), // Convert base64 string back to Buffer
             parsed.senderPublicKey
         );
