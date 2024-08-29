@@ -3,12 +3,19 @@
  * It should store ...
  */
 export class Transaction {
-    
+    amount: number;
+    payer: string;
+    receiver: string
+
     constructor(
-        private amount: number,
-        private payer: string,
-        private receiver: string
-    ) {}
+        amount: number,
+        payer: string,
+        receiver: string
+    ) {
+        this.amount = amount;
+        this.payer = payer;
+        this.receiver = receiver;
+    }
 
     toString() {
         return JSON.stringify(this);

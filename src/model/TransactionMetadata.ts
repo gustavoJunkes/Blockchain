@@ -20,21 +20,20 @@ export class TransactionMetadata {
         this.senderPublicKey = senderPublicKey;
     }
 
-    serialize() {
+    serialize(): string {
         return JSON.stringify({
             transaction: this.transaction,
-            signature: this.signature.toString('base64'), // Convert Buffer to base64 string
+            signature: this.signature.toString('base64'), 
             senderPublicKey: this.senderPublicKey
         });
     }
 
-    // Method to deserialize a JSON string back into a TransactionMetadata object
     static deserialize(data: string): TransactionMetadata {
         const parsed = JSON.parse(data);
         const transactionParsed = new Transaction(parsed.transaction.amount, parsed.transaction.payer, parsed.transaction.receiver)
         return new TransactionMetadata(
             transactionParsed,
-            Buffer.from(parsed.signature, 'base64'), // Convert base64 string back to Buffer
+            Buffer.from(parsed.signature, 'base64'), 
             parsed.senderPublicKey
         );
     }

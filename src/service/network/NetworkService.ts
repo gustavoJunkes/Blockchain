@@ -8,6 +8,8 @@ import { TransactionMetadata } from "../../model/TransactionMetadata.js";
 import { pipe } from "it-pipe";
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { ValidationService } from "../ValidationService.js";
+import { Block } from "../../model/Block.js";
+import { ChainService } from "../ChainService.js";
 
 
 export class NetworkService {   
@@ -76,7 +78,7 @@ export class NetworkService {
         });
 
         /**
-         * handle transactions received to validate
+         * Handle transactions received to validate.
          */
         this.node?.handle('/validate-transaction', async ( {stream}: any ) => {
             pipe(
@@ -90,6 +92,23 @@ export class NetworkService {
                 }
               )
         });
+
+        /**
+         * Handle new blocks being created (mined) by other nodes.
+         */
+        this.node?.handle('/new-block', async ( {stream}: any ) => {
+            pipe(
+                stream,
+                async function (source) {
+                  for await (const msg of source) {
+                    const value2 = Block.deserialize(uint8ArrayToString(msg.subarray()));
+                    // TODO: stop any mining operation and refetch the chain to keep consistency.
+                    ChainService.getInstance().addBlock(value2);
+                }
+                }
+              )
+        });
+
     }
 
     /**
