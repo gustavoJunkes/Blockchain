@@ -57,6 +57,7 @@ scheduleJob('*/30 * * * * *', () => {
     if (transaction) {
         const block = MiningService.getInstance().mine(transaction);
         ChainService.getInstance().addBlock(block);
+        NetworkService.getInstance().broadcastNewBlock(block)
         // TODO: after mining a block, broadcast it to the network.
     }
 })

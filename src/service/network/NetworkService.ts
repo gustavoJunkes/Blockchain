@@ -126,13 +126,13 @@ export class NetworkService {
             if (stream) {
                 console.log('Connected to', peerAddress);
    
-            // Convert the data to Uint8Array and wrap it in an array
-            const encoder = new TextEncoder();
-            const encodedData = encoder.encode(data);
-            await stream.sink([encodedData]);
-            console.log('Data sent:', data);
+                // Convert the data to Uint8Array and wrap it in an array
+                const encoder = new TextEncoder();
+                const encodedData = encoder.encode(data);
+                await stream.sink([encodedData]);
+                console.log('Data sent:', data);
             } else {
-                console.error('Failed to get stream');
+                console.error('Failed to get stream - Verify if the node is connected to the network.');
             }
         } catch (error) {
             console.error('Failed to connect or send data:', error);
@@ -152,6 +152,10 @@ export class NetworkService {
         console.log('---')
         console.log(transactionMetadata.serialize())
         this.dialNode(this.peerAdress, '/validate-transaction', transactionMetadata.serialize());
+    }
+
+    public broadcastNewBlock(block: Block) {
+        this.dialNode(this.peerAdress, '/new-block', block.serialize());
     }
 }
 
