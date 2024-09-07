@@ -8,14 +8,14 @@
 
 
 ## Features
-- A node can create transactions and broadcast them.
-- A node can validate the transactions received from the network: just receive a recently created transaction and validate the signature and the value - if valid, this transaction is added to local mempool.
-- A node can mine the transactions, using the **proof of work system**.
-- Mempool: the structure responsable for storing the unvalidated blocks - are local to each node.
-- By convention, every node will be a miner, and a regular node. Every node does everything.
-- Network: Nodes can register to the network by connecting to a known peer. Once connected, this peer can provide the new one a list of known peers, so it can find all the others. The known peer will also broadcast the new node to the network.
+- A node can create transactions and broadcast them. :heavy_check_mark:
+- A node can validate the transactions received from the network: just receive a recently created transaction and validate the signature and the value - if valid, this transaction is added to local mempool. :heavy_check_mark:
+- A node can mine the transactions (from his memPool), using the **proof of work system**. :heavy_check_mark:
+- Mempool: the structure responsable for storing the unvalidated blocks - are local to each node. :heavy_check_mark:
+- By convention, every node will be a miner, and a regular node. Every node does everything. :heavy_check_mark:
+- Network: Nodes can register to the network by connecting to a known peer. Once connected, this peer can provide the new one a list of known peers, so it can find all the others. The known peer will also broadcast the new node to the network. :hammer:
 
-P2P comunication: the protocol used to one node comunicate with others and disseminate informations across the network.
+P2P comunication: the protocol used to one node comunicate with others and disseminate informations across the network. :heavy_check_mark:
 
 ## Demonstration
 
