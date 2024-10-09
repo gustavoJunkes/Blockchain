@@ -14,6 +14,7 @@
 - Mempool: the structure responsable for storing the unvalidated blocks - are local to each node. :heavy_check_mark:
 - By convention, every node will be a miner, and a regular node. Every node does everything. :heavy_check_mark:
 - Network: Nodes can register to the network by connecting to a known peer. Once connected, this peer can provide the new one a list of known peers, so it can find all the others. The known peer will also broadcast the new node to the network. :hammer:
+    - When init the app, set up a local node to serve as the first peer.
 
 P2P comunication: the protocol used to one node comunicate with others and disseminate informations across the network. :heavy_check_mark:
 
