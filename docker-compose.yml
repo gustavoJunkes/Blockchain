@@ -1,0 +1,36 @@
+version: '3'
+services:
+  node_1:
+    build: .
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - GENESIS=true
+    networks:
+      - blockchain_net
+    container_name: node_1
+
+  node_2:
+    build: .
+    ports:
+      - "3002:3000"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - blockchain_net
+    container_name: node_2
+
+  node_3:
+    build: .
+    ports:
+      - "3003:3000"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - blockchain_net
+    container_name: node_3
+
+networks:
+  blockchain_net:
+    driver: bridge
