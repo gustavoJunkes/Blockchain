@@ -20,7 +20,7 @@ export class TransactionService {
     }
 
     /**
-     * Create a new transactions - entrypoint of the process of transaction creation.
+     * Create a new transaction - entrypoint of the process of transaction creation.
      * 1. Create new transaction
      * 2. Sign the transaction
      * 3. Send to validation (external and internal)

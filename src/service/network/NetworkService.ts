@@ -10,12 +10,19 @@ import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { ValidationService } from "../ValidationService.js";
 import { Block } from "../../model/Block.js";
 import { ChainService } from "../ChainService.js";
+import { FileSevice } from "../FileService.js";
+import { gossipsub, GossipSub } from "@chainsafe/libp2p-gossipsub";
+import { identify } from "@libp2p/identify";
+import { deprecate } from "util";
+import { decode } from "punycode";
 
-
+/**
+ * 
+ */
 export class NetworkService {   
     
-    private peerAdress = '/ip4/127.0.0.1/tcp/9000/p2p/12D3KooWAQzFCSdWAP3sqNepvZ2wddmzHmQ9id5Us7ag4zGBys4h';
-    private port = '8000'
+    private peerAdress = '/ip4/node_1/tcp/8000' // '/ip4/127.0.0.1/tcp/9000/p2p/12D3KooWAQzFCSdWAP3sqNepvZ2wddmzHmQ9id5Us7ag4zGBys4h';
+    private port = '8000' // get from env variable
 
     private static instance: NetworkService;
 
@@ -39,31 +46,61 @@ export class NetworkService {
         this.node = await createLibp2p({
             start: false,
             addresses: {
-                listen: [`/ip4/127.0.0.1/tcp/${this.port}`]
+                listen: [`/ip4/0.0.0.0/tcp/${this.port}`]
             },
             transports: [tcp()],
             connectionEncryption: [noise()],
             streamMuxers: [yamux()], // maybe not usefull for us
-            peerDiscovery: [ 
-                bootstrap({
-                  list: this.bootstrapMultiaddrs, // for basic setup we are using this one, but in the future should use the @libp2p/mdns
-                })
-              ]
+            services: {
+                pubsub: gossipsub({emitSelf: true}),
+                identify: identify()
+              }
         })
 
-        this.handleConnections();
-        
         await this.node.start();
         console.log('libp2p has started')
 
-        const listenAddrs = this.node.getMultiaddrs()
+        const listenAddrs = this.node.getMultiaddrs();
+        const peer = {peerName: 'node_01', address: listenAddrs[0].toString(), status: 'running', genesis: true};
         console.log('libp2p is listening on the following addresses: ', listenAddrs)
+        FileSevice.getInstance().savePeer(peer); 
+
+        this.handleDirectConnections();
+        this.listenToBroadcasts();      
+        this.subscribeToTopic('new-block');
+        this.subscribeToTopic('validate-transaction');
+
+    }
+
+
+    private async listenToBroadcasts() {
+        const pubsub = this.node?.services.pubsub as GossipSub;
+
+        pubsub.addEventListener('message', (event) => {
+            console.log('Message received:', event.detail);
+            const decodedValue = new TextDecoder().decode(event.detail.data);
+            console.log(decodedValue);
+
+            const topic = event.detail.topic;
+
+            if (topic === 'validate-transaction') {
+                const object = TransactionMetadata.deserialize(decodedValue);
+                ValidationService.getInstance().validateTransaction(object.transaction, object.senderPublicKey, object.signature);
+            } else if (topic === 'new-block') {
+                const object = Block.deserialize(decodedValue);
+                // TODO: stop any mining operation and refetch the chain to keep consistency.
+                ChainService.getInstance().addBlock(object);
+            }
+
+        });
+    
     }
 
     /**
-     * Here we handle the connections to this node, using the specified protocol.
+     * Here we handle the connections made directly to this node, using the specified protocol.
+     * This method shouldnt be used for broadcasting - but only in exceptional cases where we need direct communications with a specific node.
      */
-    private async handleConnections() {
+    private async handleDirectConnections() {
         this.node?.handle('/node-connect', async ( {stream}: any ) => {
             pipe(
                 stream,
@@ -104,7 +141,7 @@ export class NetworkService {
                     const value2 = Block.deserialize(uint8ArrayToString(msg.subarray()));
                     // TODO: stop any mining operation and refetch the chain to keep consistency.
                     ChainService.getInstance().addBlock(value2);
-                }
+                    }
                 }
               )
         });
@@ -112,9 +149,22 @@ export class NetworkService {
     }
 
     /**
-     * Used to connect to node in given address and send data
+     * Used to connect to node in given address and send data.
+     * From now on this method resolves the address to send the data.
      */
     private async dialNode(peerAddress: string, protocol: string, data: any) {
+        const peers = FileSevice.getInstance().getPeers();
+        const peer = peers[peers.length-1];
+        peerAddress = peer.address;
+
+        const selfAddress = this.node?.getMultiaddrs()[0].toString();
+
+        // cant connect to itself
+        if (selfAddress === peerAddress) {
+            console.log('Attempt of self connection intercepted.')
+            return;
+        }
+
         const ma = multiaddr(peerAddress);
 
         try {
@@ -139,6 +189,25 @@ export class NetworkService {
         }
     }
 
+    /**
+     * In this method we broadcast the message to the given topic. Any node subscribed to this topic will receive the message.
+     * @param topic 
+     * @param content is the content to be published. Objects need to be encoded into json string using JSON.stringfy() before calling this method
+     */
+    broadcastToNetwork(topic: string, content: string) {
+        const pubsub = this.node?.services.pubsub as GossipSub;
+        pubsub.publish(topic, new TextEncoder().encode(content));
+    }
+
+    /**
+     * This method centralizes the topic subscription
+     * @param topic the topic to subscribe
+     */
+    subscribeToTopic(topic: string) {
+        const pubsub = this.node?.services.pubsub as GossipSub;
+        pubsub.subscribe(topic);
+    }
+
     async stop() {
         if (this.node) {
             await this.node.stop();
@@ -146,16 +215,20 @@ export class NetworkService {
         }
     }
 
+    /**
+     * Here we publish
+     * @param transactionMetadata the transaction data that will be published
+     */
     public publicTransactionToValidation(transactionMetadata: TransactionMetadata) {
-        console.log('------- transactionMetadata.serialize() -------')
-        console.log(transactionMetadata.serialize())
-        console.log('---')
-        console.log(transactionMetadata.serialize())
-        this.dialNode(this.peerAdress, '/validate-transaction', transactionMetadata.serialize());
+        // this.dialNode(this.peerAdress, '/validate-transaction', transactionMetadata.serialize());
+        this.broadcastToNetwork('validate-transaction', transactionMetadata.serialize());
+
     }
 
     public broadcastNewBlock(block: Block) {
-        this.dialNode(this.peerAdress, '/new-block', block.serialize());
+        // this.dialNode(this.peerAdress, '/new-block', block.serialize());
+        this.broadcastToNetwork('new-block', block.serialize());
+
     }
 }
 
