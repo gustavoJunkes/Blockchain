@@ -22,24 +22,19 @@ export class ValidationService {
      * Entrypoint for transaction validation.
      * Validate the signature and the balance.
      * At the end, broadcast the transaction for the mempool.
+     * This method should be called by the second node of the process, responsable only for validation. It will be called by the node that created the transaction as well, to maintain integrity.
      * @param transaction 
      * @param senderPublicKey 
      * @param signature 
      */
     public validateTransaction(transaction: Transaction, senderPublicKey: string, signature: Buffer): boolean {
-        console.log('--------- the transaction hash ------------')
-        console.log(transaction.toString())
-
         const validSignature = crypto.createVerify('SHA256').update(transaction.toString()).verify(senderPublicKey, signature);
-        // TODO: Validate balance of the sending wallet
-
-        console.log(validSignature)
-
+        
         if (validSignature) {
+            // TODO: Validate balance of the sending wallet
             var newTransactionMetadata = new TransactionMetadata(transaction, signature, senderPublicKey);
             MemPoolService.getInstance().publishToMemPool(newTransactionMetadata);
         }
-
         
         return validSignature // && balanceValid;
     }
