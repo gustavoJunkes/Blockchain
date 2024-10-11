@@ -15,6 +15,9 @@ import { gossipsub, GossipSub } from "@chainsafe/libp2p-gossipsub";
 import { identify } from "@libp2p/identify";
 import { deprecate } from "util";
 import { decode } from "punycode";
+import { mdns } from "@libp2p/mdns";
+import { Peer } from "../../model/Peer.js";
+import { MemPoolService } from "../MemPoolService.js";
 
 /**
  * 
@@ -33,15 +36,13 @@ export class NetworkService {
         return NetworkService.instance;
     }
 
-    // Known peers addresses - just dummy value, no node is running in the network by default
-    bootstrapMultiaddrs = [
-        '/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb',
-        '/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN'
-    ]
-
     private node: Libp2p | undefined
 
     async setupNode() {
+        // here we can control the bootstrap logic
+        const genesisNode = this.getGenesisNode();
+        let genesisNodeAddress: string = genesisNode.address;
+
         // create a new node
         this.node = await createLibp2p({
             start: false,
@@ -52,9 +53,17 @@ export class NetworkService {
             connectionEncryption: [noise()],
             streamMuxers: [yamux()], // maybe not usefull for us
             services: {
-                pubsub: gossipsub({emitSelf: true}),
+                pubsub: gossipsub({emitSelf: false}),
                 identify: identify()
-              }
+              },
+            peerDiscovery: [
+                mdns(),
+                bootstrap({
+                    list: [
+                        genesisNodeAddress
+                    ]
+                })
+            ]
         })
 
         await this.node.start();
@@ -67,9 +76,9 @@ export class NetworkService {
 
         this.handleDirectConnections();
         this.listenToBroadcasts();      
-        this.subscribeToTopic('new-block');
         this.subscribeToTopic('validate-transaction');
-
+        this.subscribeToTopic('memory-pool');
+        this.subscribeToTopic('new-block');
     }
 
 
@@ -79,19 +88,22 @@ export class NetworkService {
         pubsub.addEventListener('message', (event) => {
             console.log('Message received:', event.detail);
             const decodedValue = new TextDecoder().decode(event.detail.data);
-            console.log(decodedValue);
 
             const topic = event.detail.topic;
+            
+            console.log(`Received connection for topic [${topic}]`)
 
             if (topic === 'validate-transaction') {
-                const object = TransactionMetadata.deserialize(decodedValue);
-                ValidationService.getInstance().validateTransaction(object.transaction, object.senderPublicKey, object.signature);
+                const transactionData = TransactionMetadata.deserialize(decodedValue);
+                ValidationService.getInstance().validateTransaction(transactionData.transaction, transactionData.senderPublicKey, transactionData.signature);
             } else if (topic === 'new-block') {
-                const object = Block.deserialize(decodedValue);
+                const blockData = Block.deserialize(decodedValue);
                 // TODO: stop any mining operation and refetch the chain to keep consistency.
-                ChainService.getInstance().addBlock(object);
+                ChainService.getInstance().addBlock(blockData);
+            } else if (topic === 'memory-pool') {
+                const transactionData = TransactionMetadata.deserialize(decodedValue);
+                MemPoolService.getInstance().addToMemPool(transactionData);
             }
-
         });
     
     }
@@ -146,6 +158,13 @@ export class NetworkService {
               )
         });
 
+    }
+
+    private getGenesisNode(): Peer {
+        const peers = FileSevice.getInstance().getPeers();
+        const peer = peers[peers.length-1];
+
+        return peer;
     }
 
     /**
@@ -216,16 +235,22 @@ export class NetworkService {
     }
 
     /**
-     * Here we publish
+     * Here we publish the transaction to be validate by the other nodes.
      * @param transactionMetadata the transaction data that will be published
      */
     public publicTransactionToValidation(transactionMetadata: TransactionMetadata) {
-        // this.dialNode(this.peerAdress, '/validate-transaction', transactionMetadata.serialize());
+        console.log('Broadcasting transaction to validation...');
         this.broadcastToNetwork('validate-transaction', transactionMetadata.serialize());
 
     }
 
+    public broadcastTransactionMemPool(transactionMetadata: TransactionMetadata) {
+        console.log('Broadcasting a new unprocessed transaction for memory pools...')
+        this.broadcastToNetwork('memory-pool', transactionMetadata.serialize());
+    }
+
     public broadcastNewBlock(block: Block) {
+        console.log('Broadcasting a new block to the network...')
         // this.dialNode(this.peerAdress, '/new-block', block.serialize());
         this.broadcastToNetwork('new-block', block.serialize());
 
