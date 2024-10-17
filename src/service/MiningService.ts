@@ -2,6 +2,10 @@ import * as crypto from 'crypto';
 import { Block } from '../model/Block.js';
 import { Chain } from '../model/Chain.js';
 import { TransactionMetadata } from '../model/TransactionMetadata.js';
+import { scheduleJob } from "node-schedule"
+import { MemPool } from '../model/MemPool.js';
+import { ChainService } from './ChainService.js';
+import { NetworkService } from './network/NetworkService.js';
 
 /**
  * Here we manage the mining related actions.
@@ -17,11 +21,33 @@ export class MiningService {
         return MiningService.instance;
     }
 
+    mining = true;
+    
+    stopMining() {
+        this.mining = false;
+    }
+
+    /**
+     * Mine the transactions in the mempool.
+     * If the node receive a new block to the chain from the network, this process has to stop and restart.
+     */
+    registerMiningSchedule() {
+        scheduleJob('*/30 * * * * *', () => {
+            this.mining = true;
+            const transaction = MemPool.getInstance().transactions.pop();
+            if (transaction) {
+                const block = this.mine(transaction);
+                ChainService.getInstance().addBlock(block);
+                NetworkService.getInstance().broadcastNewBlock(block)
+            }
+        })
+    }
+
     /**
      * Mine the transaction using the proof of work algorithm.
      * @param transaction 
      */
-    mine(transaction: TransactionMetadata): Block {
+    private mine(transaction: TransactionMetadata): Block {
         let block = new Block(Chain.getInstance().lastBlock.hash, transaction.transaction);
         block.nonce = this.proofOfWork(block.nonce);
         return block;
