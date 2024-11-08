@@ -29,16 +29,8 @@ export default app;
  * Method used to test separated parts of the system.
  */
 async function main() {
-
-    if (/** is the genesis node */ true) {
-        console.log("Genesis node setup...");
-    } else if (/** is the 2nd node */ true) {
-        console.log("Second node setup...");
-    } else if (/** is the 3rd node */ true) {
-        console.log("Third node setup...");
-    }
-    NetworkService.getInstance().setupNode();
     MiningService.getInstance().registerMiningSchedule();
+    NetworkService.getInstance().setupNode();
 
 }
 
