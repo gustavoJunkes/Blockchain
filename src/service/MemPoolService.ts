@@ -35,4 +35,12 @@ export class MemPoolService {
     public addToMemPool(transaction: TransactionMetadata) {
         MemPool.getInstance().transactions.push(transaction);
     }
+
+    /**
+     * Remove the given transaction from the local memPool.
+     * @param transaction 
+     */
+    public removeFromMemPool(transaction: TransactionMetadata) {
+        MemPool.getInstance().transactions = MemPool.getInstance().transactions.filter(item => item !== transaction);
+    }
 }

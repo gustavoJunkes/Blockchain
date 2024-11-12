@@ -18,6 +18,7 @@ import { decode } from "punycode";
 import { mdns } from "@libp2p/mdns";
 import { Peer } from "../../model/Peer.js";
 import { MemPoolService } from "../MemPoolService.js";
+import { MiningService } from "../MiningService.js";
 
 /**
  * 
@@ -158,6 +159,20 @@ export class NetworkService {
               )
         });
 
+        this.node?.handle('/mined-transaction', async ( {stream}: any ) => {
+            pipe(
+                stream,
+                async function (source) {
+                  for await (const msg of source) {
+                    var value = uint8ArrayToString(msg.subarray())
+                    const value2 = TransactionMetadata.deserialize(value);
+                    // remove this transaction from mempool and stop any mining that might be happening
+                    MiningService.getInstance().handleNewMinedTransaction(value2)
+                }
+                }
+              )
+        });
+
     }
 
     private getGenesisNode(): Peer {
@@ -253,7 +268,12 @@ export class NetworkService {
         console.log('Broadcasting a new block to the network...')
         // this.dialNode(this.peerAdress, '/new-block', block.serialize());
         this.broadcastToNetwork('new-block', block.serialize());
+    }
 
+    public broadcastMinedTransaction(transaction: TransactionMetadata) {
+        console.log('Broadcasting a mined transaction to the network...')
+        // this.dialNode(this.peerAdress, '/new-block', block.serialize());
+        this.broadcastToNetwork('mined-transaction', transaction.serialize());
     }
 }
 
