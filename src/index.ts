@@ -38,6 +38,7 @@ async function main() {
         console.log("Third node setup...");
     }
     NetworkService.getInstance().setupNode();
+    MiningService.getInstance().registerMiningSchedule();
 
 }
 

@@ -19,7 +19,8 @@ export class AppController {
 
         console.log(transactionReceived)
 
-        const localWallet1 = FileSevice.getInstance().getWallets().filter((value) => value.id === 1)[0];
+        // find the demo wallets
+        const localWallet1 = FileSevice.getInstance().getWallets().filter((value) => value.id === 1)[0]; 
         const localWallet2 = FileSevice.getInstance().getWallets().filter((value) => value.id === 2)[0];
         
         const transaction = await TransactionService.getInstance().createTransaction(transactionReceived.amount, localWallet1.privateKey, localWallet1.publicKey, localWallet2.publicKey);

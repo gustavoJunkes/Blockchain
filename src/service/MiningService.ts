@@ -21,19 +21,12 @@ export class MiningService {
         return MiningService.instance;
     }
 
-    mining = true;
-    
-    stopMining() {
-        this.mining = false;
-    }
-
     /**
      * Mine the transactions in the mempool.
      * If the node receive a new block to the chain from the network, this process has to stop and restart.
      */
     registerMiningSchedule() {
         scheduleJob('*/30 * * * * *', () => {
-            this.mining = true;
             const transaction = MemPool.getInstance().transactions.pop();
             if (transaction) {
                 const block = this.mine(transaction);
@@ -56,7 +49,8 @@ export class MiningService {
     
     /**
      * Proof of work method.
-     * This method deal with the double spend issue. If One subject tries to make the same transaction twice simultaneously, it will ensure they are different using the nonce
+     * Deal with the double spend issue. If One subject tries to make the same transaction twice simultaneously, it will ensure they are different using the nonce
+     * + it creates an easy way to validate if a transaction has been mined.
      * We try to find a number that when added to the nonce will result 
      * @param nonce 
      * @returns return the value that added to the nounce
