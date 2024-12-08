@@ -1,23 +1,31 @@
-# Blockchain Implementaion in Node.js
+# Blockchain Implementation in Node.js
 
-## Table of contents
-...
+## Table of Contents
+
+1. [Project Overview](#project-overview)
+2. [Tech Stack](#tech-stack)
+3. [Features](#features)
+4. [Demonstration](#demonstration)
+5. [Getting Started](#getting-started)
+6. [Development Setup](#development-setup)
+7. [API Documentation](#api-documentation)
+8. [Protocol](#protocol)
+10. [Contributing](#contributing)
+11. [License](#license)
 
 ## Project Overview
 
 This is a simple Blockchain implementation using NodeJs. We simulate a network of nodes using docker, where each node is a container in the network.
 
 ## Features
-- A node can create transactions and broadcast them. :heavy_check_mark:
-- A node can validate the transactions received from the network: just receive a recently created transaction and validate the signature and the value - if valid, this transaction is added to local mempool. :heavy_check_mark:
-- A node can mine the transactions (from his memPool), using the **proof of work system**. :heavy_check_mark:
-- Mempool: the structure responsable for storing the unvalidated blocks - are local to each node. :heavy_check_mark:
-- By convention, every node will be a miner, and a regular node. Every node does everything. :heavy_check_mark:
-- Network: Nodes can register to the network by connecting to a known peer. Once connected, this peer can provide the new one a list of known peers, so it can find all the others. The known peer will also broadcast the new node to the network. :heavy_check_mark:
-    - When init the app, set up a local node to serve as the first peer.:heavy_check_mark:
-- Script that setup the instances of the app to connect with one another. :heavy_check_mark:
+- **Transaction Creation and Broadcasting**: Nodes can create transactions and disseminate them across the network. 
+- **Transaction Validation**: Each node validates transactions by verifying their signature and ensuring data integrity before adding them to its mempool.
+- **Mining with Proof-of-Work**: Transactions in the mempool are mined using a computationally intensive Proof-of-Work system, ensuring blockchain security.
+- **Decentralized P2P Network**: Nodes can discover and connect with each other dynamically, ensuring robust peer-to-peer communication.
+- **Chain Synchronization (To Be Implemented)**: Nodes periodically sync their local blockchain with others to ensure consistency and adopt the longest valid chain.
 
-P2P comunication: the protocol used to one node comunicate with others and disseminate informations across the network. :heavy_check_mark:
+
+P2P communication: the protocol used to one node comunicate with others and disseminate informations across the network. :heavy_check_mark:
 
 
 ## To do
@@ -28,43 +36,62 @@ P2P comunication: the protocol used to one node comunicate with others and disse
     - Handle incoming requests accord with the protocol (one for valid, other for mempool, etc) :heavy_check_mark:
 - Implement a chain sync service: time to time we need to compare the local chain with the one in the network. The chain version accepted is the one used by most nodes.
 
+## Tech Stack
+- **Node.js**: Backend logic
+- **Docker**: Containerization
+- **Libp2p**: Peer-to-peer networking
+- **Express.js**: REST API
+- **TypeScript**: Type safety
+
+
 ## Demonstration
 
-First we start the network by running the docker compose script.
+First, start the network by running the `docker-compose` script.
 
-After starting, we can choose a node and send a request to create a new transaction:
-![alt text](image-1.png)
+### Creating Transactions
+After starting, select a node and send a request to create a new transaction:
 
-Imediatly after creation, the transaction is published to the network and each node receiving will validate and add it to its local memory pool.
+![Create Transaction](image-1.png)
 
-We can consult the node memory pool:
-![alt text](image-2.png)
+Immediately after creation, the transaction is broadcast to the network. Receiving nodes validate and add it to their local mempool.
 
-Each node will try to mine the transactions in their local memory pool, and after that add it to the chain:
+### Viewing the Mempool
+You can view the transactions in a node's mempool:
+
+![Mempool](image-2.png)
+
+### Mining Transactions
+Each node mines transactions from its local mempool and adds them to its local chain, if appliable.
+
 
 ## Getting Started
 
-### Runing on your machine
+### Prerequisites
 
-In order to make the deployment and tests easier, the whole application starts and set up with a docker-compose script.
+- Docker (v20+)
+- Docker Compose (v2+)
 
-So to run and try it locally, you will need docker and docker compose installed.
+### Running the Application
 
-Once you have cloned the repository, you can run using the `` docker compose up `` command.
+1. Clone the repository.
 
-The script will automaticly create 3 containers, each with an instance of the blockchain. 
+2. Start the network: `` docker compose up ``.
 
-Each node public the port 3000 + its index (1,2 or 3).
+3. Access the nodes: Each node exposes an API on port 3000 + the index number of the node.
 
-Nodes also provide endpoints that help us understanding and debugging what is happening under the sheets:
-- `` /api/app/mempool ``: Will return a list of the transactions in the mempool of that node.
-- `` /api/app/chain ``: Return the blockchain version of that node.
-- `` /api/app/new-transaction ``: Is the entrypoint for creating transactions in the network.
+### API Endpoints
 
+Each node provides the following endpoints for interacting with the network:
 
-
-
+- **`/api/app/mempool`**: Returns the list of transactions in the node's mempool.
+- **`/api/app/chain`**: Returns the blockchain state of the node.
+- **`/api/app/new-transaction`**: Creates a new transaction and broadcasts it to the network.
 
 ## Contribute
 
-At the moment, the best way of contributing is to open an issue stating your suggestion, question or problem. From there we can discuss a better aproach for the situation.
+Contributions are welcome! The best way to contribute is by opening an issue to discuss your suggestions, questions, or problems. From there, we can work on an appropriate solution together.
+
+Feel free to fork and experiment! Feedback is always appreciated.
+
+
+
