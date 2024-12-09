@@ -21,16 +21,17 @@ This is a simple Blockchain implementation using NodeJs. We simulate a network o
 - **Transaction Creation and Broadcasting**: Nodes can create transactions and disseminate them across the network. 
 - **Transaction Validation**: Each node validates transactions by verifying their signature and ensuring data integrity before adding them to its mempool.
 - **Mining with Proof-of-Work**: Transactions in the mempool are mined using a computationally intensive Proof-of-Work system, ensuring blockchain security.
-- **Decentralized P2P Network**: Nodes can discover and connect with each other dynamically, ensuring robust peer-to-peer communication.
+- **Decentralized P2P Network**: Nodes can discover and connect with each other dynamically using peer-to-peer communication.
 - **Chain Synchronization (To Be Implemented)**: Nodes periodically sync their local blockchain with others to ensure consistency and adopt the longest valid chain.
 
 
-P2P communication: the protocol used to one node comunicate with others and disseminate informations across the network. :heavy_check_mark:
+P2P communication: the protocol used to one node comunicate with others and disseminate informations across the network. 
 
 
 ## To do
 - Chain sync service: time to time we need to compare the local chain with the one in the network. The chain version accepted is the one used by most nodes.
 - Custom wallets: allow users to register new wallets and use them when creating a new transaction.
+- Validate the integrity of new transactions.
 
 ## Tech Stack
 - **Node.js**: Backend logic
