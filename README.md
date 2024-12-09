@@ -32,6 +32,7 @@ P2P communication: the protocol used to one node comunicate with others and diss
 - Chain sync service: time to time we need to compare the local chain with the one in the network. The chain version accepted is the longest and the one used by most nodes.
 - Custom wallets: allow users to register new wallets and use them when creating a new transaction.
 - Validate the integrity of new transactions.
+- Apply the consensus algorithm and verify the nonce of the transaction.
 
 ## Tech Stack
 - **Node.js** for the Backend logic.
