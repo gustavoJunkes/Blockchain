@@ -34,11 +34,11 @@ P2P communication: the protocol used to one node comunicate with others and diss
 - Validate the integrity of new transactions.
 
 ## Tech Stack
-- **Node.js**: Backend logic
-- **Docker**: Containerization
-- **Libp2p**: Peer-to-peer networking
-- **Express.js**: REST API
-- **TypeScript**: Type safety
+- **Node.js** for the Backend logic
+- **Docker** for Containerization
+- **Libp2p** for Peer-to-peer networking
+- **Express.js** for REST API services
+- **TypeScript** for Type safety
 
 
 ## Demonstration
