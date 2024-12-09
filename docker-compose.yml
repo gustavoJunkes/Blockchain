@@ -31,6 +31,47 @@ services:
       - blockchain_net
     container_name: node_3
 
+  node_4:
+    build: .
+    ports:
+      - "3004:3000"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - blockchain_net
+    container_name: node_4
+
+  node_5:
+    build: .
+    ports:
+      - "3005:3000"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - blockchain_net
+    container_name: node_5
+
+  node_6:
+    build: .
+    ports:
+      - "3006:3000"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - blockchain_net
+    container_name: node_6
+
+  node_7:
+    build: .
+    ports:
+      - "3007:3000"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - blockchain_net
+    container_name: node_7
+
+
 networks:
   blockchain_net:
     driver: bridge
