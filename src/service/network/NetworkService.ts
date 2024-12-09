@@ -150,10 +150,10 @@ export class NetworkService {
             pipe(
                 stream,
                 async function (source) {
-                  for await (const msg of source) {
-                    const value2 = Block.deserialize(uint8ArrayToString(msg.subarray()));
-                    // TODO: stop any mining operation and refetch the chain to keep consistency.
-                    ChainService.getInstance().addBlock(value2);
+                    for await (const msg of source) {
+                        const value2 = Block.deserialize(uint8ArrayToString(msg.subarray()));
+                        // TODO: stop any mining operation and refetch the chain to keep consistency. --> when i receive a new block, its a signal that i have to stop any mining and refetch the chain because it has been changed...
+                        ChainService.getInstance().addBlock(value2);
                     }
                 }
               )

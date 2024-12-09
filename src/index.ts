@@ -29,7 +29,7 @@ export default app;
  * Method used to test separated parts of the system.
  */
 async function main() {
-    MiningService.getInstance().registerMiningSchedule();
+    MiningService.getInstance();
     NetworkService.getInstance().setupNode();
 
 }
