@@ -29,16 +29,16 @@ P2P communication: the protocol used to one node comunicate with others and diss
 
 
 ## To do
-- Chain sync service: time to time we need to compare the local chain with the one in the network. The chain version accepted is the one used by most nodes.
+- Chain sync service: time to time we need to compare the local chain with the one in the network. The chain version accepted is the longest and the one used by most nodes.
 - Custom wallets: allow users to register new wallets and use them when creating a new transaction.
 - Validate the integrity of new transactions.
 
 ## Tech Stack
-- **Node.js** for the Backend logic
-- **Docker** for Containerization
-- **Libp2p** for Peer-to-peer networking
-- **Express.js** for REST API services
-- **TypeScript** for Type safety
+- **Node.js** for the Backend logic.
+- **Docker** for Containerization.
+- **[Libp2p](https://github.com/libp2p/js-libp2p)** for Peer-to-peer networking.
+- **Express.js** for REST API services.
+- **TypeScript** for Type safety.
 
 
 ## Demonstration
