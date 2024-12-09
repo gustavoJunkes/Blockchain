@@ -29,12 +29,8 @@ P2P communication: the protocol used to one node comunicate with others and diss
 
 
 ## To do
-- Node registry mechanism: a node, as soon as it is up, should find another already node running in the network and connect to it. :heavy_check_mark:
-- Decode data received via network. :heavy_check_mark:
-- Create a service that manage the network system:
-    - Connects and broadcast to multiple nodes at same time. :heavy_check_mark:
-    - Handle incoming requests accord with the protocol (one for valid, other for mempool, etc) :heavy_check_mark:
-- Implement a chain sync service: time to time we need to compare the local chain with the one in the network. The chain version accepted is the one used by most nodes.
+- Chain sync service: time to time we need to compare the local chain with the one in the network. The chain version accepted is the one used by most nodes.
+- Custom wallets: allow users to register new wallets and use them when creating a new transaction.
 
 ## Tech Stack
 - **Node.js**: Backend logic
