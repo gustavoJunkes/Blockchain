@@ -1,18 +1,5 @@
 # Blockchain Implementation in Node.js
 
-## Table of Contents
-
-1. [Project Overview](#project-overview)
-2. [Tech Stack](#tech-stack)
-3. [Features](#features)
-4. [Demonstration](#demonstration)
-5. [Getting Started](#getting-started)
-6. [Development Setup](#development-setup)
-7. [API Documentation](#api-documentation)
-8. [Protocol](#protocol)
-10. [Contributing](#contributing)
-11. [License](#license)
-
 ## Project Overview
 
 This is a simple Blockchain implementation using NodeJs. We simulate a network of nodes using docker, where each node is a container in the network.
