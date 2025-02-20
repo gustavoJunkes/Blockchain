@@ -1,7 +1,3 @@
-/**
- * This class represents a transaction in the chain.
- * It should store ...
- */
 export class Transaction {
     amount: number;
     payer: string;

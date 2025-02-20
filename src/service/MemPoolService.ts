@@ -1,5 +1,4 @@
 import { MemPool } from "../model/MemPool.js";
-import { Transaction } from '../model/Transaction';
 import { TransactionMetadata } from "../model/TransactionMetadata.js";
 
 /**
@@ -24,8 +23,6 @@ export class MemPoolService {
      */
     public publishToMemPool(transaction: TransactionMetadata) {
         this.addToMemPool(transaction); 
-
-        // TODO: publish this transaction to the network?
     }
 
     /**

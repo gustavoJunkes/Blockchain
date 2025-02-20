@@ -4,14 +4,8 @@ import { TransactionService } from '../service/TransactionService.js';
 import { ValidationService } from '../service/ValidationService.js';
 import { Chain } from '../model/Chain.js';
 import { MemPool } from '../model/MemPool.js';
-import { MemPoolService } from '../service/MemPoolService.js';
 
-/** 
- * Here we deal with new transactions done by this node.
- * 
- * - Endpoint to create new transaction.
- *
- */
+
 export class AppController {
 
     public static async newTransaction(req: Request, res: Response) {
@@ -19,7 +13,7 @@ export class AppController {
 
         console.log(transactionReceived)
 
-        // find the demo wallets
+        // todo: receiv wallet data in request
         const localWallet1 = FileSevice.getInstance().getWallets().filter((value) => value.id === 1)[0]; 
         const localWallet2 = FileSevice.getInstance().getWallets().filter((value) => value.id === 2)[0];
         

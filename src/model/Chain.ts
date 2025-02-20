@@ -2,7 +2,6 @@ import { Block } from './Block.js';
 import { Transaction } from './Transaction.js';
 
 export class Chain {
-
     private static instance: Chain;
     chain: Block[] = [];
 

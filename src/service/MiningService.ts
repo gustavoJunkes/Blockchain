@@ -29,7 +29,6 @@ export class MiningService {
     }
 
     /**
-     * esse é o metodo que comecei a fazer pra tentar parar o processo usando força bruta, pode ignoralo. pode ser que possamos de alguma forma matar essa instancia da classe miningService e criar uma nova...
      * Here we handle when another node mine a transaction.
      * We need to remove the mined transaction from the local memory pool and stop any mining process that might be happening, revalidate mempool and restart the process.
      */

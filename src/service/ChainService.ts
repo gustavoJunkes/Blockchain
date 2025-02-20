@@ -26,10 +26,9 @@ export class ChainService {
      * @returns true if the block was added to the chain, false otherwise.
      */
     addBlock(block: Block): boolean {
-        // here we can add any final validation logic we need 
         // TODO: Validate the state of the chain.
         Chain.getInstance().chain.push(block);
-        return true; // for now, always returns success
+        return true; // for now, always returns success - will change as consistency rules are added
     }
 
 }

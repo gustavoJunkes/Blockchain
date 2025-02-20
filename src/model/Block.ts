@@ -1,18 +1,14 @@
 import * as crypto from 'crypto'
 import { Transaction } from './Transaction.js';
 
-/**
- * This class represents a transaction in the chain.
- * 
- */
 export class Block {
     public nonce = Math.random();
-    private previousBlock: string; // should we store only the header (in hash) of the previous block?
+    private previousBlock: string; 
     private transaction: Transaction;
     private date;
 
     constructor(
-        previousBlock: string, // should we store only the header (in hash) of the previous block?
+        previousBlock: string,
         transaction: Transaction,
         date = Date.now()
     ) {

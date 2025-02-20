@@ -2,11 +2,7 @@ import * as crypto from 'crypto';
 import { MemPoolService } from './MemPoolService.js';
 import { Transaction } from '../model/Transaction.js';
 import { TransactionMetadata } from '../model/TransactionMetadata.js';
-import { send } from 'process';
 
-/**
- * Here we validate transactions
- */
 export class ValidationService {
 
     private static instance: ValidationService;

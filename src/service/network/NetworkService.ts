@@ -13,16 +13,12 @@ import { ChainService } from "../ChainService.js";
 import { FileSevice } from "../FileService.js";
 import { gossipsub, GossipSub } from "@chainsafe/libp2p-gossipsub";
 import { identify } from "@libp2p/identify";
-import { deprecate } from "util";
-import { decode } from "punycode";
 import { mdns } from "@libp2p/mdns";
 import { Peer } from "../../model/Peer.js";
 import { MemPoolService } from "../MemPoolService.js";
 import { MiningService } from "../MiningService.js";
 
-/**
- * 
- */
+
 export class NetworkService {   
     
     private peerAdress = '/ip4/node_1/tcp/8000' // '/ip4/127.0.0.1/tcp/9000/p2p/12D3KooWAQzFCSdWAP3sqNepvZ2wddmzHmQ9id5Us7ag4zGBys4h';
@@ -166,13 +162,11 @@ export class NetworkService {
                   for await (const msg of source) {
                     var value = uint8ArrayToString(msg.subarray())
                     const value2 = TransactionMetadata.deserialize(value);
-                    // remove this transaction from mempool and stop any mining that might be happening
                     MiningService.getInstance().handleNewMinedTransaction(value2)
                 }
                 }
               )
         });
-
     }
 
     private getGenesisNode(): Peer {
@@ -266,13 +260,11 @@ export class NetworkService {
 
     public broadcastNewBlock(block: Block) {
         console.log('Broadcasting a new block to the network...')
-        // this.dialNode(this.peerAdress, '/new-block', block.serialize());
         this.broadcastToNetwork('new-block', block.serialize());
     }
 
     public broadcastMinedTransaction(transaction: TransactionMetadata) {
         console.log('Broadcasting a mined transaction to the network...')
-        // this.dialNode(this.peerAdress, '/new-block', block.serialize());
         this.broadcastToNetwork('mined-transaction', transaction.serialize());
     }
 }

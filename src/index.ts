@@ -14,9 +14,8 @@ import { appRoutes } from './routes/app-routes.js';
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json()); // To parse incoming JSON requests
+app.use(express.json()); 
 
-// Setup routes
 app.use('/api/app', appRoutes);
 
 app.listen(PORT, () => {

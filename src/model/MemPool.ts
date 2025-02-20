@@ -2,7 +2,7 @@ import { Transaction } from './Transaction';
 import { TransactionMetadata } from './TransactionMetadata';
 
 /**
- * Data structure responsable for storing the transactions that were verified but are not yet mined
+ * Data structure responsable for storing the transactions that were verified but are not mined yet
  */
 export class MemPool {
     public transactions: TransactionMetadata[] = [];

@@ -1,6 +1,5 @@
 import * as files from 'fs';
 import { TransactionMetadata } from '../model/TransactionMetadata';
-import { json } from 'stream/consumers';
 import { Wallet } from '../model/Wallet';
 import { Peer } from '../model/Peer';
 
@@ -33,11 +32,8 @@ export class FileSevice {
     addTransactionToValidate(transactionData: TransactionMetadata) {
         const jsonContent = JSON.parse(files.readFileSync(this.sourceFile, 'utf8'));
         jsonContent.transactionsToValidate.push(transactionData);
-
-        // console.log(jsonContent)
         const newFileContent = JSON.stringify(jsonContent);
 
-        // console.log(newFileContent)
         files.writeFileSync(this.sourceFile, newFileContent);
     }
 
@@ -52,10 +48,7 @@ export class FileSevice {
         const jsonContent = JSON.parse(files.readFileSync(this.sourceFile, 'utf8'));
         jsonContent.wallets.push(wallet);
 
-        // console.log(jsonContent)
         const newFileContent = JSON.stringify(jsonContent);
-
-        // console.log(newFileContent)
         files.writeFileSync(this.sourceFile, newFileContent);
     }
 
@@ -67,14 +60,10 @@ export class FileSevice {
     }
 
     savePeer(peer: {peerName: string, address: string, status: string, genesis: boolean}) {
-        // console.log(peer)
         const jsonContent = JSON.parse(files.readFileSync(this.sourceFilePeerDiscovery, 'utf8'));
         jsonContent.peers.push(peer);
-
-        // console.log(jsonContent)
         const newFileContent = JSON.stringify(jsonContent);
 
-        // console.log(newFileContent)
         files.writeFileSync(this.sourceFilePeerDiscovery, newFileContent);
     }
 
